@@ -44,7 +44,7 @@ PanelWindow {
             id: bitmapTitle
 
             property string text: ""
-            property real characterSpacing: Config.c.slideOffset ?? 1.2
+            property real characterSpacing: Config.c.characterSpacing ?? 1.2
             property string fontImage: "./fonts/MusicTitleFont.png"
             property string currentTitle: ""
             property string currentStatus: ""

@@ -53,8 +53,9 @@ PanelWindow {
             property real slideOffset: Config.c.slideOffset ?? 30
             property real animationDuration: Config.c.animationDuration ?? 600
             property real titleDuration: Config.c.titleDuration ?? 7000
+            property real calculatedWidth: 100
 
-            width: textRow.width
+            width: textContainer.width // ?? calculatedWidth
             height: MusicTitleFont.fontInfo.lineHeight
 
             opacity: 0.0
@@ -163,9 +164,26 @@ PanelWindow {
                 }
             }
 
-            Row {
-                id: textRow
-                spacing: bitmapTitle.characterSpacing
+            Item {
+                id: textContainer
+                width: calculateTextWidth()
+                height: MusicTitleFont.fontInfo.lineHeight
+
+                function calculateTextWidth() {
+                    var totalWidth = 0;
+                    for (var i = 0; i < bitmapTitle.text.length; i++) {
+                        var charCode = bitmapTitle.text.charCodeAt(i);
+                        var fontData = bitmapTitle.getFontForChar(charCode);
+                        var charData = fontData.getCharData(charCode);
+                        totalWidth += charData.xadvance;
+
+                        if (i < bitmapTitle.text.length - 1) {
+                            totalWidth += bitmapTitle.characterSpacing;
+                        }
+                    }
+                    bitmapTitle.calculatedWidth = totalWidth;
+                    return totalWidth;
+                }
 
                 Repeater {
                     model: bitmapTitle.text.length
@@ -175,18 +193,34 @@ PanelWindow {
                         property var fontData: bitmapTitle.getFontForChar(charCode)
                         property var charData: fontData.getCharData(charCode)
                         property real configScale: Config.c.scale ?? 2
+                        property real calculatedX: bitmapTitle.calculateCharacterX(index)
 
                         source: fontData.fontImage
                         sourceClipRect: Qt.rect(charData.x, charData.y, charData.width, charData.height)
 
                         width: charData.width * configScale
                         height: charData.height * configScale
-                        x: charData.xoffset * configScale
+                        x: calculatedX + charData.xoffset
                         y: charData.yoffset // * configScale
 
                         smooth: false
                     }
                 }
+            }
+
+            function calculateCharacterX(charIndex) {
+                var xPos = 0;
+                for (var i = 0; i < charIndex; i++) {
+                    var charCode = text.charCodeAt(i);
+                    var fontData = getFontForChar(charCode);
+                    var charData = fontData.getCharData(charCode);
+                    xPos += charData.xadvance;
+
+                    if (i < text.length - 1) {
+                        xPos += charData.width;
+                    }
+                }
+                return xPos;
             }
 
             function updateMusicInfo() {
@@ -234,6 +268,7 @@ PanelWindow {
 
             function showTitle() {
                 hideTimer.stop();
+                textContainer.calculateTextWidth();
                 isAnimating = true;
                 opacity = 0.0;
                 x = baseX - slideOffset;

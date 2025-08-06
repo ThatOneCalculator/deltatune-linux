@@ -55,7 +55,7 @@ PanelWindow {
             property real titleDuration: Config.c.titleDuration ?? 7000
             property real calculatedWidth: 100
 
-            width: calculatedWidth
+            width: textContainer.width // ?? calculatedWidth
             height: MusicTitleFont.fontInfo.lineHeight
 
             opacity: 0.0
@@ -166,7 +166,7 @@ PanelWindow {
 
             Item {
                 id: textContainer
-                width: bitmapTitle.calculatedWidth
+                width: calculateTextWidth()
                 height: MusicTitleFont.fontInfo.lineHeight
 
                 function calculateTextWidth() {
@@ -217,7 +217,7 @@ PanelWindow {
                     xPos += charData.xadvance;
 
                     if (i < text.length - 1) {
-                        xPos += characterSpacing * 0.35;
+                        xPos += charData.width;
                     }
                 }
                 return xPos;
@@ -231,7 +231,6 @@ PanelWindow {
                         running: true
                         stdout: StdioCollector {
                             onStreamFinished: {
-                                // textContainer.calculateTextWidth();
                                 bitmapTitle.currentStatus = this.text.trim();
                                 bitmapTitle.checkTitleUpdate();
                             }
@@ -253,7 +252,6 @@ PanelWindow {
                                     if (newTitle.length > 0 && newTitle !== bitmapTitle.currentTitle) {
                                         bitmapTitle.currentTitle = newTitle;
                                         bitmapTitle.text = "♪ ~ " + newTitle;
-                                        textContainer.calculateTextWidth();
                                         bitmapTitle.showTitle();
                                     } else if (newTitle.length === 0) {
                                         bitmapTitle.hideTitle();
@@ -270,6 +268,7 @@ PanelWindow {
 
             function showTitle() {
                 hideTimer.stop();
+                textContainer.calculateTextWidth();
                 isAnimating = true;
                 opacity = 0.0;
                 x = baseX - slideOffset;

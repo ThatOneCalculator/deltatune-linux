@@ -41,5 +41,16 @@ var c = {
 
   // Background color
   // Highly recommended to just keep this as "transparent"
-  backgroundColor: "transparent"
+  backgroundColor: "transparent",
+
+  // Shows the artist's name.
+  showArtist: true,
+
+  // Artist First
+  // Will show the artists name before the song's title.
+  artistFirst: false,
+  
+  // Stagger Artist
+  // Will make the artists name appear under the title.
+  staggerArtist: true
 }

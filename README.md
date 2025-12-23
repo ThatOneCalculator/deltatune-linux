@@ -41,7 +41,7 @@ After installing, edit `/etc/xdg/quickshell/deltatune/config.js`. Configuration 
 - [x] Enter/leave animation
 - [x] Configuration
 - [x] AUR package
-- [ ] Artist info(?)
+- [x] Artist info(?)
 - [ ] 🦀 Rewrite it in Rust
 
 ## Additional credits

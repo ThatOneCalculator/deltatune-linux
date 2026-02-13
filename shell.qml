@@ -195,12 +195,14 @@ PanelWindow {
                 var statusProc = Qt.createQmlObject(`
                     import Quickshell.Io
                     Process {
+                        id: proc
                         command: ["playerctl", "status"]
                         running: true
                         stdout: StdioCollector {
                             onStreamFinished: {
                                 bitmapTitle.currentStatus = this.text.trim();
                                 bitmapTitle.checkTitleUpdate();
+                                proc.destroy();
                             }
                         }
                     }
@@ -212,6 +214,7 @@ PanelWindow {
                     var titleProc = Qt.createQmlObject(`
                         import Quickshell.Io
                         Process {
+                            id: proc
                             command: ["playerctl", "metadata", "xesam:title"]
                             running: true
                             stdout: StdioCollector {
@@ -223,8 +226,8 @@ PanelWindow {
                                         bitmapTitle.showTitle();
                                     } else if (newTitle.length === 0) {
                                         bitmapTitle.hideTitle();
-                                        destroy();
                                     }
+                                    proc.destroy();
                                 }
                             }
                         }
